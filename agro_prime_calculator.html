@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор - Агро Прайм Троицкий МЭЗ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .info-banner h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .label-info {
+            font-weight: 400;
+            color: #666;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30, 60, 114, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            color: white;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-size: 20px;
+            font-weight: 700;
+            padding-top: 15px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .result-value {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .breakdown {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .breakdown-item {
+            padding: 5px 0;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #856404;
+        }
+
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #721c24;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #155724;
+        }
+
+        .restrictions {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .restrictions h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .restrictions ul {
+            margin-left: 20px;
+            color: #424242;
+            font-size: 13px;
+        }
+
+        .restrictions li {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .premium-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌻 Калькулятор закупки подсолнечника</h1>
+            <p>Агро Прайм Троицкий МЭЗ - Качественные показатели</p>
+        </div>
+
+        <div class="content">
+            <div class="info-banner">
+                <div class="premium-badge">ТРОИЦКИЙ МЭЗ</div>
+                <h3>Расчет стоимости с учетом показателей качества</h3>
+                <p>Система автоматического расчета скидок и надбавок по базисным нормам</p>
+            </div>
+
+            <div class="input-section">
+                <div class="section-title">💰 Базовые параметры</div>
+                <div class="grid-3">
+                    <div class="input-group">
+                        <label>Базовая цена за 1 кг (руб.)</label>
+                        <input type="number" id="basePrice" step="0.01" value="30.00" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Вес партии (кг)</label>
+                        <input type="number" id="weight" step="1" value="1000" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Номер партии/ТС</label>
+                        <input type="text" id="batchNumber" placeholder="Введите номер">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <div class="section-title">🔬 Показатели качества</div>
+                
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>
+                            Влажность, %
+                            <span class="label-info">(базис: 8%, макс: 15%)</span>
+                        </label>
+                        <input type="number" id="moisture" step="0.01" value="8.00" min="0" max="100">
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Сорная примесь, %
+                            <span class="label-info">(базис: 3%, макс: 16%)</span>
+                        </label>
+                        <input type="number" id="impurity" step="0.01" value="3.00" min="0" max="100">
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Кислотное число, мг КОН/г
+                            <span class="label-info">(базис: 5.0, макс: 5.0)</span>
+                        </label>
+                        <input type="number" id="acidNumber" step="0.01" value="5.00" min="0">
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Масличность, %
+                            <span class="label-info">(базис: 46%, мин: 34%)</span>
+                        </label>
+                        <input type="number" id="oilContent" step="0.01" value="46.00" min="0" max="100">
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Семена других злаковых, %
+                            <span class="label-info">(макс: 2%)</span>
+                        </label>
+                        <input type="number" id="grainSeeds" step="0.01" value="0.00" min="0" max="100">
+                    </div>
+                </div>
+
+                <div id="warnings"></div>
+
+                <div class="restrictions">
+                    <h4>📋 Критерии приемки</h4>
+                    <ul>
+                        <li>✅ Влажность: до 15% (свыше - не подлежит приемке)</li>
+                        <li>✅ Сорная примесь: до 16% (свыше - не подлежит приемке)</li>
+                        <li>✅ Кислотное число: до 5.0 мг КОН/г (свыше - по усмотрению покупателя)</li>
+                        <li>✅ Масличность: от 34% (ниже - не подлежит приемке)</li>
+                        <li>✅ Семена других злаковых: не более 2%</li>
+                        <li>❌ Не принимаются семена с прелым или гнилостным запахом</li>
+                        <li>❌ Не принимаются семена крупноплодного подсолнечника низкомасличных сортов</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculate()">🧮 Рассчитать стоимость</button>
+
+            <div id="results" class="results"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const basePrice = parseFloat(document.getElementById('basePrice').value) || 0;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const moisture = parseFloat(document.getElementById('moisture').value) || 0;
+            const impurity = parseFloat(document.getElementById('impurity').value) || 0;
+            const acidNumber = parseFloat(document.getElementById('acidNumber').value) || 0;
+            const oilContent = parseFloat(document.getElementById('oilContent').value) || 0;
+            const grainSeeds = parseFloat(document.getElementById('grainSeeds').value) || 0;
+            const batchNumber = document.getElementById('batchNumber').value || 'Не указан';
+
+            let warnings = [];
+            let errors = [];
+            let totalAdjustment = 0;
+            let breakdown = [];
+
+            // Проверка критических ограничений
+            if (moisture > 15) {
+                errors.push('Влажность свыше 15% - товар не подлежит приемке');
+            }
+
+            if (impurity > 16) {
+                errors.push('Сорная примесь свыше 16% - товар не подлежит приемке');
+            }
+
+            if (oilContent < 34) {
+                errors.push('Масличность ниже 34% - товар не подлежит приемке');
+            }
+
+            if (grainSeeds > 2) {
+                errors.push('Семена других злаковых превышают 2% - товар не подлежит приемке');
+            }
+
+            // Расчет корректировок по влажности
+            if (moisture > 8 && moisture <= 15) {
+                let moistureDiscount = 0;
+                if (moisture <= 10) {
+                    moistureDiscount = (moisture - 8) * 1.0;
+                    breakdown.push(`Влажность ${moisture.toFixed(2)}%: -${moistureDiscount.toFixed(2)}% (1% за каждый % от 8% до 10%)`);
+                } else if (moisture <= 15) {
+                    moistureDiscount = (10 - 8) * 1.0 + (moisture - 10) * 1.5;
+                    breakdown.push(`Влажность ${moisture.toFixed(2)}%: -${moistureDiscount.toFixed(2)}% (1% за 8-10%, 1.5% за 10-15%)`);
+                }
+                totalAdjustment -= moistureDiscount;
+            }
+
+            // Расчет корректировок по сорной примеси
+            if (impurity > 3 && impurity <= 16) {
+                let impurityDiscount = 0;
+                if (impurity <= 8) {
+                    impurityDiscount = (impurity - 3) * 1.0;
+                    breakdown.push(`Сорная примесь ${impurity.toFixed(2)}%: -${impurityDiscount.toFixed(2)}% (1% за каждый % от 3% до 8%)`);
+                } else if (impurity <= 10) {
+                    impurityDiscount = (8 - 3) * 1.0 + (impurity - 8) * 1.5;
+                    breakdown.push(`Сорная примесь ${impurity.toFixed(2)}%: -${impurityDiscount.toFixed(2)}% (1% за 3-8%, 1.5% за 8-10%)`);
+                } else if (impurity <= 16) {
+                    impurityDiscount = (8 - 3) * 1.0 + (10 - 8) * 1.5 + (impurity - 10) * 2.0;
+                    breakdown.push(`Сорная примесь ${impurity.toFixed(2)}%: -${impurityDiscount.toFixed(2)}% (1% за 3-8%, 1.5% за 8-10%, 2% за 10-16%)`);
+                }
+                totalAdjustment -= impurityDiscount;
+            }
+
+            // Расчет корректировок по кислотному числу
+            if (acidNumber > 5.0) {
+                const acidDiscount = 5.0;
+                warnings.push(`Кислотное число ${acidNumber.toFixed(2)} мг КОН/г превышает 5.0 - скидка 5% (приемка по усмотрению покупателя)`);
+                breakdown.push(`Кислотное число ${acidNumber.toFixed(2)}: -5.0% (свыше 5.0 мг КОН/г)`);
+                totalAdjustment -= acidDiscount;
+            }
+
+            // Расчет корректировок по масличности
+            if (oilContent > 46) {
+                const oilBonus = (oilContent - 46) * 1.0;
+                breakdown.push(`Масличность ${oilContent.toFixed(2)}%: +${oilBonus.toFixed(2)}% (1% за каждый % свыше 46%)`);
+                totalAdjustment += oilBonus;
+            } else if (oilContent < 46 && oilContent >= 34) {
+                let oilDiscount = 0;
+                if (oilContent >= 42) {
+                    oilDiscount = (46 - oilContent) * 1.5;
+                    breakdown.push(`Масличность ${oilContent.toFixed(2)}%: -${oilDiscount.toFixed(2)}% (1.5% за каждый % от 42% до 46%)`);
+                } else if (oilContent >= 34) {
+                    oilDiscount = (46 - 42) * 1.5 + (42 - oilContent) * 4.0;
+                    breakdown.push(`Масличность ${oilContent.toFixed(2)}%: -${oilDiscount.toFixed(2)}% (1.5% за 42-46%, 4% за 34-42%)`);
+                }
+                totalAdjustment -= oilDiscount;
+            }
+
+            // Вывод предупреждений и ошибок
+            const warningsDiv = document.getElementById('warnings');
+            warningsDiv.innerHTML = '';
+            
+            errors.forEach(error => {
+                warningsDiv.innerHTML += `<div class="error">❌ ${error}</div>`;
+            });
+
+            warnings.forEach(warning => {
+                warningsDiv.innerHTML += `<div class="warning">⚠️ ${warning}</div>`;
+            });
+
+            if (errors.length > 0) {
+                warningsDiv.innerHTML += `<div class="error"><strong>❌ ТОВАР НЕ ПОДЛЕЖИТ ПРИЕМКЕ</strong><br>Устраните указанные выше нарушения для приемки товара.</div>`;
+            }
+
+            // Расчет финальной цены
+            const adjustmentMultiplier = 1 + (totalAdjustment / 100);
+            const finalPricePerKg = basePrice * adjustmentMultiplier;
+            const totalCost = finalPricePerKg * weight;
+
+            // Вывод результатов
+            const resultsDiv = document.getElementById('results');
+            
+            let resultsHTML = '<h3 style="margin-bottom: 15px;">Результаты расчета</h3>';
+            
+            if (errors.length > 0) {
+                resultsDiv.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)';
+                resultsHTML += '<div style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">⛔ ТОВАР НЕ ПРИНИМАЕТСЯ</div>';
+            } else {
+                resultsDiv.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+                if (warnings.length > 0) {
+                    resultsHTML += '<div style="font-size: 16px; margin-bottom: 15px;">⚠️ Приемка по усмотрению покупателя</div>';
+                }
+            }
+
+            resultsHTML += `
+                <div class="result-item">
+                    <span class="result-label">Номер партии/ТС:</span>
+                    <span class="result-value">${batchNumber}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Базовая цена за 1 кг:</span>
+                    <span class="result-value">${basePrice.toFixed(2)} руб.</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Корректировка цены:</span>
+                    <span class="result-value">${totalAdjustment >= 0 ? '+' : ''}${totalAdjustment.toFixed(2)}%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Итоговая цена за 1 кг:</span>
+                    <span class="result-value">${finalPricePerKg.toFixed(2)} руб.</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Стоимость партии (${weight.toLocaleString('ru-RU')} кг):</span>
+                    <span class="result-value">${totalCost.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})} руб.</span>
+                </div>
+            `;
+
+            if (breakdown.length > 0) {
+                resultsHTML += '<div class="breakdown"><strong>Детализация корректировок:</strong>';
+                breakdown.forEach(item => {
+                    resultsHTML += `<div class="breakdown-item">• ${item}</div>`;
+                });
+                resultsHTML += '</div>';
+            }
+
+            resultsDiv.innerHTML = resultsHTML;
+            resultsDiv.classList.add('show');
+        }
+
+        // Автоматический пересчет при изменении
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                if (document.getElementById('results').classList.contains('show')) {
+                    calculate();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
